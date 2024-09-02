@@ -27,11 +27,16 @@ import { FcGoogle } from "react-icons/fc";
 
 import { z } from "zod";
 
-const formSchema = z.object({
-	email: z.string().email(),
-	password: z.string().min(8),
-	confirmPassword: z.string().min(8),
-});
+const formSchema = z
+	.object({
+		email: z.string().email(),
+		password: z.string().min(8, "Password must be at least 8 characters"),
+		confirmPassword: z.string(),
+	})
+	.refine((data) => data.password === data.confirmPassword, {
+		message: "Passwords don't match",
+		path: ["confirmPassword"],
+	});
 
 export default function SignUpCard() {
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -45,10 +50,19 @@ export default function SignUpCard() {
 
 	const { signIn } = useAuthActions();
 
-	function onSubmit(values: z.infer<typeof formSchema>) {
-		// Do something with the form values.
-		// ✅ This will be type-safe and validated.
-		console.log(values);
+	async function onSubmit(values: z.infer<typeof formSchema>) {
+		try {
+			await signIn("password", {
+				email: values.email,
+				password: values.password,
+				flow: "signUp",
+			});
+		} catch (error) {
+			// TODO: figure out what error actually occurred and display error message accordingly. Right now, the error doesnot doesnot have much context and i couldn't find anything in convex docs.
+			form.setError("email", {
+				message: "Email is already in use",
+			});
+		}
 	}
 
 	return (
@@ -115,8 +129,12 @@ export default function SignUpCard() {
 									</FormItem>
 								)}
 							/>
-							<Button className="w-full" type="submit">
-								Sign up
+							<Button
+								className="w-full"
+								type="submit"
+								disabled={form.formState.isSubmitting}
+							>
+								{form.formState.isSubmitting ? "Signing up..." : "Sign up"}
 							</Button>
 						</form>
 					</Form>

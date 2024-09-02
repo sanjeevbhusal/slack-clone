@@ -1,5 +1,6 @@
 "use client";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -20,7 +21,9 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, Terminal } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
@@ -29,7 +32,7 @@ import { z } from "zod";
 
 const formSchema = z.object({
 	email: z.string().email(),
-	password: z.string().min(8),
+	password: z.string(),
 });
 
 export default function SignInCard() {
@@ -41,12 +44,21 @@ export default function SignInCard() {
 		},
 	});
 
+	const [error, setError] = useState<string | null>(null);
+
 	const { signIn } = useAuthActions();
 
-	function onSubmit(values: z.infer<typeof formSchema>) {
-		// Do something with the form values.
-		// ✅ This will be type-safe and validated.
-		console.log(values);
+	async function onSubmit(values: z.infer<typeof formSchema>) {
+		try {
+			await signIn("password", {
+				email: values.email,
+				password: values.password,
+				flow: "signIn",
+			});
+		} catch (error) {
+			// TODO: figure out what error actually occurred and display error message accordingly. Right now, the error doesnot doesnot have much context and i couldn't find anything in convex docs.
+			setError("Invalid email or password");
+		}
 	}
 
 	return (
@@ -57,6 +69,12 @@ export default function SignInCard() {
 					<CardDescription>Sign in to your account</CardDescription>
 				</CardHeader>
 				<CardContent className="flex flex-col gap-y-4">
+					{error && !form.formState.isSubmitting && (
+						<Alert variant="destructive">
+							<AlertCircle className="h-4 w-4" />
+							<AlertDescription>{error}</AlertDescription>
+						</Alert>
+					)}
 					<Form {...form}>
 						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 							<FormField
@@ -95,8 +113,12 @@ export default function SignInCard() {
 									</FormItem>
 								)}
 							/>
-							<Button className="w-full" type="submit">
-								Sign in
+							<Button
+								className="w-full"
+								type="submit"
+								disabled={form.formState.isSubmitting}
+							>
+								{form.formState.isSubmitting ? "Signing in..." : "Sign in"}
 							</Button>
 						</form>
 					</Form>
