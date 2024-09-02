@@ -29,6 +29,7 @@ import { z } from "zod";
 
 const formSchema = z
 	.object({
+		fullName: z.string().min(1, "Name is required"),
 		email: z.string().email(),
 		password: z.string().min(8, "Password must be at least 8 characters"),
 		confirmPassword: z.string(),
@@ -42,6 +43,7 @@ export default function SignUpCard() {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
+			fullName: "",
 			email: "",
 			password: "",
 			confirmPassword: "",
@@ -53,6 +55,7 @@ export default function SignUpCard() {
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
 			await signIn("password", {
+				name: values.fullName,
 				email: values.email,
 				password: values.password,
 				flow: "signUp",
@@ -77,17 +80,25 @@ export default function SignUpCard() {
 						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 							<FormField
 								control={form.control}
+								name="fullName"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Full Name</FormLabel>
+										<FormControl>
+											<Input required {...field} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
 								name="email"
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel>Email</FormLabel>
 										<FormControl>
-											<Input
-												type="email"
-												placeholder="Email"
-												required
-												{...field}
-											/>
+											<Input type="email" required {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -100,12 +111,7 @@ export default function SignUpCard() {
 									<FormItem>
 										<FormLabel>Password</FormLabel>
 										<FormControl>
-											<Input
-												type="password"
-												placeholder="Password"
-												required
-												{...field}
-											/>
+											<Input type="password" required {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -118,12 +124,7 @@ export default function SignUpCard() {
 									<FormItem>
 										<FormLabel>Confirm Password</FormLabel>
 										<FormControl>
-											<Input
-												type="password"
-												placeholder="Confirm Password"
-												required
-												{...field}
-											/>
+											<Input type="password" required {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
