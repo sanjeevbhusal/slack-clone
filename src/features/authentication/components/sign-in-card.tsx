@@ -103,7 +103,12 @@ export default function SignInCard() {
 
 					<div className="flex flex-col gap-y-4">
 						<Separator />
-						<Button variant="outline" type="button" className="w-full">
+						<Button
+							variant="outline"
+							type="button"
+							className="w-full"
+							onClick={() => signIn("google")}
+						>
 							<FcGoogle className="mr-2 size-5" />
 							Sign in with Google
 						</Button>

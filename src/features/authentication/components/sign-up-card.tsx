@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { useAuthActions } from "@convex-dev/auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -41,6 +42,8 @@ export default function SignUpCard() {
 			confirmPassword: "",
 		},
 	});
+
+	const { signIn } = useAuthActions();
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
 		// Do something with the form values.
@@ -120,11 +123,21 @@ export default function SignUpCard() {
 
 					<div className="flex flex-col gap-y-4">
 						<Separator />
-						<Button variant="outline" type="button" className="w-full">
+						<Button
+							variant="outline"
+							type="button"
+							className="w-full"
+							onClick={() => signIn("google")}
+						>
 							<FcGoogle className="mr-2 size-5" />
 							Sign up with Google
 						</Button>
-						<Button variant="outline" type="button" className="w-full">
+						<Button
+							variant="outline"
+							type="button"
+							className="w-full"
+							onClick={() => signIn("github")}
+						>
 							<FaGithub className="mr-2 size-5" />
 							Sign up with Github
 						</Button>
