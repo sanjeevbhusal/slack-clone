@@ -9,16 +9,16 @@ const isAuthRoute = createRouteMatcher(["/sign-in", "/sign-up"]);
 const isProtectedRoute = createRouteMatcher(["/(.*)"]);
 
 export default convexAuthNextjsMiddleware((request) => {
+	if (isAuthRoute(request) && isAuthenticatedNextjs()) {
+		return nextjsMiddlewareRedirect(request, "/");
+	}
+
 	if (
 		isProtectedRoute(request) &&
 		!isAuthenticatedNextjs() &&
 		!isAuthRoute(request)
 	) {
 		return nextjsMiddlewareRedirect(request, "/sign-in");
-	}
-
-	if (isAuthRoute(request) && isAuthenticatedNextjs()) {
-		return nextjsMiddlewareRedirect(request, "/");
 	}
 });
 

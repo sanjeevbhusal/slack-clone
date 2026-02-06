@@ -1,10 +1,5 @@
-import Navbar from "@/components/navbar";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-	title: "Home - Chatterbox",
-};
+"use client";
 
 export default function Home() {
-	return <Navbar />;
+	return <div>Home</div>;
 }

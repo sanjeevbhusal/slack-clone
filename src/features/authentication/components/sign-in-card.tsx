@@ -54,6 +54,7 @@ export default function SignInCard() {
 				email: values.email,
 				password: values.password,
 				flow: "signIn",
+				redirectTo: "/workspaces",
 			});
 		} catch (error) {
 			// TODO: figure out what error actually occurred and display error message accordingly. Right now, the error doesnot doesnot have much context and i couldn't find anything in convex docs.
@@ -129,7 +130,7 @@ export default function SignInCard() {
 							variant="outline"
 							type="button"
 							className="w-full"
-							onClick={() => signIn("google")}
+							onClick={() => signIn("google", { redirectTo: "/workspaces" })}
 						>
 							<FcGoogle className="mr-2 size-5" />
 							Sign in with Google
@@ -138,7 +139,7 @@ export default function SignInCard() {
 							variant="outline"
 							type="button"
 							className="w-full"
-							onClick={() => signIn("github")}
+							onClick={() => signIn("github", { redirectTo: "/workspaces" })}
 						>
 							<FaGithub className="mr-2 size-5" />
 							Sign in with Github
